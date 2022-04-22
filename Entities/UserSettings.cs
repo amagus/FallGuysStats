@@ -43,5 +43,6 @@
         public string GameExeLocation { get; set; }
         public bool AutoLaunchGameOnStartup { get; set; }
         public string OverlayFontSerialized { get; set; }
+        public bool RealPing { get; set; }
     }
 }

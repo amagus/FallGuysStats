@@ -58,6 +58,7 @@ namespace FallGuysStats {
             chkFlipped.Checked = CurrentSettings.FlippedDisplay;
             chkHidePercentages.Checked = CurrentSettings.HideOverlayPercentages;
             chkChangeHoopsieLegends.Checked = CurrentSettings.HoopsieHeros;
+            chkUseRealPing.Checked = CurrentSettings.RealPing;
 
             switch (CurrentSettings.OverlayColor) {
                 case 0: cboOverlayColor.SelectedItem = "Magenta"; break;
@@ -184,6 +185,7 @@ namespace FallGuysStats {
             CurrentSettings.FlippedDisplay = chkFlipped.Checked;
             CurrentSettings.HideOverlayPercentages = chkHidePercentages.Checked;
             CurrentSettings.HoopsieHeros = chkChangeHoopsieLegends.Checked;
+            CurrentSettings.RealPing = chkUseRealPing.Checked;
 
             switch ((string)cboOverlayColor.SelectedItem) {
                 case "Magenta": CurrentSettings.OverlayColor = 0; break;
@@ -311,6 +313,10 @@ namespace FallGuysStats {
             Font defaultFont = new Font(CustomFonts.Families[0], 18, FontStyle.Regular, GraphicsUnit.Pixel);
             lblOverlayFontExample.Font = defaultFont;
             overlayFontSerialized = string.Empty;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e) {
+
         }
     }
 }

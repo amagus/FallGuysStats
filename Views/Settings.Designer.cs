@@ -82,6 +82,7 @@
             this.chkIgnoreLevelTypeWhenSorting = new System.Windows.Forms.CheckBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.dlgOverlayFont = new System.Windows.Forms.FontDialog();
+            this.chkUseRealPing = new System.Windows.Forms.CheckBox();
             this.grpOverlay.SuspendLayout();
             this.grpCycleQualifyGold.SuspendLayout();
             this.grpCycleFastestLongest.SuspendLayout();
@@ -136,6 +137,7 @@
             // 
             // grpOverlay
             // 
+            this.grpOverlay.Controls.Add(this.chkUseRealPing);
             this.grpOverlay.Controls.Add(this.grpCycleQualifyGold);
             this.grpOverlay.Controls.Add(this.grpCycleFastestLongest);
             this.grpOverlay.Controls.Add(this.chkHidePercentages);
@@ -766,6 +768,17 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // chkUseRealPing
+            // 
+            this.chkUseRealPing.AutoSize = true;
+            this.chkUseRealPing.Location = new System.Drawing.Point(447, 227);
+            this.chkUseRealPing.Name = "chkUseRealPing";
+            this.chkUseRealPing.Size = new System.Drawing.Size(88, 17);
+            this.chkUseRealPing.TabIndex = 36;
+            this.chkUseRealPing.Text = "Use real ping";
+            this.chkUseRealPing.UseVisualStyleBackColor = true;
+            this.chkUseRealPing.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Settings
             // 
             this.AcceptButton = this.btnSave;
@@ -875,5 +888,6 @@
         private System.Windows.Forms.Label lblOverlayFontExample;
         private System.Windows.Forms.GroupBox grpOverlayFontExample;
         private System.Windows.Forms.Button btnResetOverlayFont;
+        private System.Windows.Forms.CheckBox chkUseRealPing;
     }
 }

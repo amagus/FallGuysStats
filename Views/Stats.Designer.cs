@@ -53,8 +53,8 @@
             this.lblTotalShows = new System.Windows.Forms.ToolStripLabel();
             this.lblTotalRounds = new System.Windows.Forms.ToolStripLabel();
             this.lblTotalWins = new System.Windows.Forms.ToolStripLabel();
-            this.lblTotalFinals = new System.Windows.Forms.ToolStripLabel();
             this.lblKudos = new System.Windows.Forms.ToolStripLabel();
+            this.lblTotalFinals = new System.Windows.Forms.ToolStripLabel();
             this.menu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridDetails)).BeginInit();
             this.infoStrip.SuspendLayout();
@@ -359,6 +359,13 @@
             this.lblTotalWins.MouseEnter += new System.EventHandler(this.infoStrip_MouseEnter);
             this.lblTotalWins.MouseLeave += new System.EventHandler(this.infoStrip_MouseLeave);
             // 
+            // lblKudos
+            // 
+            this.lblKudos.Margin = new System.Windows.Forms.Padding(10, 1, 0, 2);
+            this.lblKudos.Name = "lblKudos";
+            this.lblKudos.Size = new System.Drawing.Size(49, 13);
+            this.lblKudos.Text = "Kudos: 0";
+            // 
             // lblTotalFinals
             // 
             this.lblTotalFinals.ForeColor = System.Drawing.Color.Blue;
@@ -367,15 +374,6 @@
             this.lblTotalFinals.Size = new System.Drawing.Size(81, 13);
             this.lblTotalFinals.Text = "Finals: 0 (0.0 %)";
             this.lblTotalFinals.Click += new System.EventHandler(this.lblTotalFinals_Click);
-            this.lblTotalFinals.MouseEnter += new System.EventHandler(this.infoStrip_MouseEnter);
-            this.lblTotalFinals.MouseLeave += new System.EventHandler(this.infoStrip_MouseLeave);
-            // 
-            // lblKudos
-            // 
-            this.lblKudos.Margin = new System.Windows.Forms.Padding(10, 1, 0, 2);
-            this.lblKudos.Name = "lblKudos";
-            this.lblKudos.Size = new System.Drawing.Size(49, 13);
-            this.lblKudos.Text = "Kudos: 0";
             // 
             // Stats
             // 
@@ -433,9 +431,9 @@
         private System.Windows.Forms.ToolStripLabel lblTotalShows;
         private System.Windows.Forms.ToolStripLabel lblTotalRounds;
         private System.Windows.Forms.ToolStripLabel lblTotalWins;
-        private System.Windows.Forms.ToolStripLabel lblTotalFinals;
         private System.Windows.Forms.ToolStripLabel lblKudos;
         private System.Windows.Forms.ToolStripMenuItem menuLaunchFallGuys;
+        private System.Windows.Forms.ToolStripLabel lblTotalFinals;
     }
 }
 

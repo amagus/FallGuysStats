@@ -23,6 +23,8 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+
             this.lblFilter = new FallGuysStats.TransparentLabel();
             this.lblStreak = new FallGuysStats.TransparentLabel();
             this.lblFinals = new FallGuysStats.TransparentLabel();
@@ -45,7 +47,7 @@
             this.lblFilter.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.lblFilter.TextRight = "";
             this.lblFilter.Visible = false;
-            // 
+            //             
             // lblStreak
             // 
             this.lblStreak.Location = new System.Drawing.Point(22, 55);
@@ -189,7 +191,7 @@
         private TransparentLabel lblWins;
         private TransparentLabel lblFinals;
         private TransparentLabel lblPlayers;
-        private TransparentLabel lblStreak;
+        private TransparentLabel lblStreak;       
         private TransparentLabel lblFilter;
     }
 }

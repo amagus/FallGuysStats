@@ -7,6 +7,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using System.ComponentModel;
+using System.Net.NetworkInformation;
+using System.Text;
+
 namespace FallGuysStats {
     public partial class Overlay : Form {
         public const int WM_NCLBUTTONDOWN = 0xA1;
@@ -31,6 +35,8 @@ namespace FallGuysStats {
         private int drawWidth, drawHeight;
         private bool startedPlaying;
         private DateTime startTime;
+        private bool isPinging = false;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
         static Overlay() {
             if (!File.Exists("TitanOne-Regular.ttf")) {
                 using (Stream fontStream = typeof(Overlay).Assembly.GetManifestResourceStream("FallGuysStats.Resources.TitanOne-Regular.ttf")) {
@@ -46,6 +52,7 @@ namespace FallGuysStats {
         }
         public Overlay() {
             InitializeComponent();
+            InitializeBackgroundWorker();
 
             Bitmap background = Properties.Resources.background;
             Bitmap newImage = new Bitmap(background.Width, background.Height, PixelFormat.Format32bppArgb);
@@ -171,6 +178,45 @@ namespace FallGuysStats {
                     break;
             }
         }
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
+            lock (Stats.PingLock) {
+                Ping pingSender = new Ping();
+                PingOptions options = new PingOptions();
+
+                // Use the default Ttl value which is 128,
+                // but change the fragmentation behavior.
+                options.DontFragment = true;
+
+                // Create a buffer of 32 bytes of data to be transmitted.
+                string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+                byte[] buffer = Encoding.ASCII.GetBytes(data);
+                int timeout = 10;
+                for (int i = 0; i < 4; i++) {
+                    PingReply reply = pingSender.Send(Stats.LastServer, timeout, buffer, options);
+                    if (reply.Status == IPStatus.Success) {
+                        Stats.LastServerRealPing = reply.RoundtripTime;
+                        break;
+                    } else if (i == 3) {
+                        Stats.LastServerRealPing = -1;
+                    } else {
+                        Console.WriteLine("Retrying...");
+                    }
+                }
+            }
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            isPinging = false;
+        }
+
+        private void InitializeBackgroundWorker() {
+            backgroundWorker1.DoWork +=
+                new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker1.RunWorkerCompleted +=
+                new RunWorkerCompletedEventHandler(
+            backgroundWorker1_RunWorkerCompleted);
+        }
+
         private void SetPlayersLabel() {
             int playersSwitchCount = switchCount;
             if (!StatsForm.CurrentSettings.SwitchBetweenPlayers) {
@@ -183,8 +229,18 @@ namespace FallGuysStats {
                     break;
                 case 1:
                     lblPlayers.Text = "PING:";
-                    lblPlayers.TextRight = Stats.InShow && Stats.LastServerPing != 0 ? $"{Stats.LastServerPing} ms" : "-";
+                    if (StatsForm.CurrentSettings.RealPing) {
+                        lblPlayers.TextRight = Stats.InShow && Stats.LastServerPing > 0 ? $"{Stats.LastServerRealPing} ms" : "-";
+                    } else {
+                        lblPlayers.TextRight = Stats.InShow && Stats.LastServerPing != 0 ? $"{Stats.LastServerPing} ms" : "-";
+                    }
+                    
                     break;
+            }
+            lock (Stats.PingLock) {
+                if (Stats.InShow && StatsForm.CurrentSettings.RealPing && !isPinging && Stats.LastServerRealPing == 0 && Stats.LastServer != "") {
+                    backgroundWorker1.RunWorkerAsync();
+                }
             }
         }
         private void SetStreakInfo(StatSummary levelInfo) {

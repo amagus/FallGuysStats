@@ -37,6 +37,7 @@ namespace FallGuysStats {
         public int LastPing;
         public int Duration;
         public RoundInfo Info;
+        public string ServerIp = "";
     }
     public class LogFileWatcher {
         const int UpdateDelay = 500;
@@ -165,6 +166,13 @@ namespace FallGuysStats {
                         if (logRound.LastPing != 0) {
                             Stats.LastServerPing = logRound.LastPing;
                         }
+                        if (logRound.Info != null && logRound.ServerIp != "" &&  logRound.Info.Start != Stats.LastServerPingDateTime) {
+                            Stats.LastServerPingDateTime = logRound.Info.Start;
+                            lock (Stats.PingLock) {
+                                Stats.LastServer = logRound.ServerIp;
+                                Stats.LastServerRealPing = 0;
+                            }
+                        }
                         OnParsedLogLinesCurrent?.Invoke(round);
                     }
 
@@ -251,6 +259,9 @@ namespace FallGuysStats {
                 logRound.HasIsFinal = index > 0;
                 index = line.Line.IndexOf("isFinalRound=True", StringComparison.OrdinalIgnoreCase);
                 logRound.IsFinal = index > 0;
+                int ipIndex = line.Line.IndexOf("Received NetworkGameOptions from", StringComparison.OrdinalIgnoreCase);
+                nextIndex = line.Line.IndexOf(":", ipIndex + 33);
+                logRound.ServerIp = line.Line.Substring(ipIndex + 33, nextIndex - ipIndex - 33);
             } else if (logRound.Info != null && logRound.CountingPlayers && (line.Line.IndexOf("[ClientGameManager] Finalising spawn", StringComparison.OrdinalIgnoreCase) > 0 || line.Line.IndexOf("[ClientGameManager] Added player ", StringComparison.OrdinalIgnoreCase) > 0)) {
                 logRound.Info.Players++;
             } else if ((index = line.Line.IndexOf("[ClientGameManager] Handling bootstrap for local player FallGuy [", StringComparison.OrdinalIgnoreCase)) > 0) {

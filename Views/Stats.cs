@@ -38,6 +38,10 @@ namespace FallGuysStats {
         public static bool InShow = false;
         public static bool EndedShow = false;
         public static int LastServerPing = 0;
+        public static readonly object PingLock = new object();
+        public static long LastServerRealPing = 0;
+        public static string LastServer = "";
+        public static DateTime LastServerPingDateTime;
 
         public List<LevelStats> StatDetails = new List<LevelStats>();
         public List<RoundInfo> CurrentRound = null;
@@ -474,7 +478,8 @@ namespace FallGuysStats {
                 OverlayHeight = 99,
                 HideOverlayPercentages = false,
                 HoopsieHeros = false,
-                Version = 18,
+                RealPing = true,
+                Version = 19,
                 AutoLaunchGameOnStartup = false,
                 GameExeLocation = string.Empty,
                 IgnoreLevelTypeWhenSorting = false,
