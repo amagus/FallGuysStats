@@ -16,7 +16,8 @@ namespace FallGuysStats.Entities {
                 this.isFinal = isFinal;
             }
         }
-        // basic obfuscation to avoid search engine trolling based on searching by file name
+
+        // basic obfuscation to avoid search engine based trolls
         private string CONTENT_FILENAME = (("c" + (("on" + "te") + "n") + "t") + '_') + (("v1"));
         private string contentPath;
         private byte[] contentXorKeyA = new byte[] {0xa1, 0x66, 0x59 - 1, 0x63 + 16, 0x4A, 0x34, 0x69, 0x64, 0x9b, 0x2c, 0xA9, 0x97, 0x6d, 0xa3, 0x6b, 0x3e + 0x01};
@@ -62,7 +63,6 @@ namespace FallGuysStats.Entities {
                     allLevelRounds.Clear();
                 }
             }
-            Console.WriteLine("Read {0} game rules!", allLevelRounds.Count);
         }
         private void processLevelRounds() {
             allLevelRounds.Clear();
@@ -73,17 +73,19 @@ namespace FallGuysStats.Entities {
                     if (levelRounds[i] is JsonClass) {
                         JsonClass levelClass = levelRounds[i] as JsonClass;
                         string LevelId = levelClass["id"].AsString();
-                        int duration = levelClass["duration"].AsInt();
-                        bool isFinal = levelClass["is_final_round"].AsBool();
-                        ContentGameRules level = new ContentGameRules(duration, isFinal);
-                        allLevelRounds[LevelId] = level;
+                        if (LevelId != null) {
+                            int duration = levelClass["duration"].AsInt();
+                            bool isFinal = levelClass["is_final_round"].AsBool();
+                            ContentGameRules level = new ContentGameRules(duration, isFinal);
+                            allLevelRounds[LevelId] = level;
+                        }
                     }
                 }
             }
         }
         public ContentGameRules getGameRulesForRound(string roundId) {
             lock (this) {
-                return allLevelRounds[roundId];
+                return allLevelRounds.ContainsKey(roundId) ? allLevelRounds[roundId] : null;
             }
         }
     }
