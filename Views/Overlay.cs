@@ -230,7 +230,7 @@ namespace FallGuysStats {
                 case 1:
                     lblPlayers.Text = "PING:";
                     if (StatsForm.CurrentSettings.RealPing) {
-                        lblPlayers.TextRight = Stats.InShow && Stats.LastServerPing > 0 ? $"{Stats.LastServerRealPing} ms" : "-";
+                        lblPlayers.TextRight = Stats.InShow && Stats.LastServerRealPing > 0 ? $"{Stats.LastServerRealPing} ms" : "-";
                     } else {
                         lblPlayers.TextRight = Stats.InShow && Stats.LastServerPing != 0 ? $"{Stats.LastServerPing} ms" : "-";
                     }

@@ -31,11 +31,8 @@ namespace FallGuysStats {
         public bool CurrentlyInParty;
         public bool PrivateLobby;
         public bool FindingPosition;
-        public bool IsFinal;
-        public bool HasIsFinal;
         public string CurrentPlayerID;
         public int LastPing;
-        public int Duration;
         public RoundInfo Info;
         public string ServerIp = "";
     }
@@ -238,9 +235,9 @@ namespace FallGuysStats {
                 logRound.Info.Start = line.Date;
                 logRound.Info.InParty = logRound.CurrentlyInParty;
                 logRound.Info.PrivateLobby = logRound.PrivateLobby;
-                logRound.Info.GameDuration = rules != null ? rules.duration : logRound.Duration;
+                logRound.Info.GameDuration = rules != null ? rules.duration : 0;
                 logRound.CountingPlayers = true;
-                logRound.Info.IsFinal = rules != null ? rules.isFinal : (logRound.IsFinal || (!logRound.HasIsFinal && LevelStats.SceneToRound.TryGetValue(logRound.Info.SceneName, out string roundName) && LevelStats.ALL.TryGetValue(roundName, out LevelStats stats) && stats.IsFinal));
+                logRound.Info.IsFinal = rules != null ? rules.isFinal : (LevelStats.SceneToRound.TryGetValue(logRound.Info.SceneName, out string roundName) && LevelStats.ALL.TryGetValue(roundName, out LevelStats stats) && stats.IsFinal);
             } else if ((index = line.Line.IndexOf("[StateMatchmaking] Begin", StringComparison.OrdinalIgnoreCase)) > 0 ||
                 (index = line.Line.IndexOf("[GameStateMachine] Replacing FGClient.StateMainMenu with FGClient.StatePrivateLobby", StringComparison.OrdinalIgnoreCase)) > 0) {
                 logRound.PrivateLobby = line.Line.IndexOf("StatePrivateLobby") > 0;
@@ -255,16 +252,9 @@ namespace FallGuysStats {
                 Stats.InShow = true;
                 round.Clear();
                 logRound.Info = null;
-            } else if ((index = line.Line.IndexOf("NetworkGameOptions: durationInSeconds=", StringComparison.OrdinalIgnoreCase)) > 0) {
-                int nextIndex = line.Line.IndexOf(" ", index + 38);
-                logRound.Duration = int.Parse(line.Line.Substring(index + 38, nextIndex - index - 38));
-                index = line.Line.IndexOf("isFinalRound=", StringComparison.OrdinalIgnoreCase);
-                logRound.HasIsFinal = index > 0;
-                index = line.Line.IndexOf("isFinalRound=True", StringComparison.OrdinalIgnoreCase);
-                logRound.IsFinal = index > 0;
-                int ipIndex = line.Line.IndexOf("Received NetworkGameOptions from", StringComparison.OrdinalIgnoreCase);
-                nextIndex = line.Line.IndexOf(":", ipIndex + 33);
-                logRound.ServerIp = line.Line.Substring(ipIndex + 33, nextIndex - ipIndex - 33);
+            } else if ((index = line.Line.IndexOf("[FG_UnityInternetNetworkManager] Client connected to Server", StringComparison.OrdinalIgnoreCase)) > 0) {
+                int ipIndex = line.Line.IndexOf("IP:", StringComparison.OrdinalIgnoreCase);
+                logRound.ServerIp = line.Line.Substring(ipIndex+3);
             } else if (logRound.Info != null && logRound.CountingPlayers && (line.Line.IndexOf("[ClientGameManager] Finalising spawn", StringComparison.OrdinalIgnoreCase) > 0 || line.Line.IndexOf("[ClientGameManager] Added player ", StringComparison.OrdinalIgnoreCase) > 0)) {
                 logRound.Info.Players++;
             } else if ((index = line.Line.IndexOf("[ClientGameManager] Handling bootstrap for local player FallGuy [", StringComparison.OrdinalIgnoreCase)) > 0) {
