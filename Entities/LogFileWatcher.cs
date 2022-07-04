@@ -48,6 +48,7 @@ namespace FallGuysStats {
         private bool running;
         private bool stop;
         private Thread watcher, parser;
+        public Entities.Content ContentV1;
 
         public event Action<List<RoundInfo>> OnParsedLogLines;
         public event Action<List<RoundInfo>> OnParsedLogLinesCurrent;
@@ -56,7 +57,7 @@ namespace FallGuysStats {
 
         public void Start(string logDirectory, string fileName) {
             if (running) { return; }
-
+            ContentV1 = new Entities.Content(logDirectory);
             filePath = Path.Combine(logDirectory, fileName);
             prevFilePath = Path.Combine(logDirectory, Path.GetFileNameWithoutExtension(fileName) + "-prev.log");
             stop = false;
@@ -67,6 +68,7 @@ namespace FallGuysStats {
         }
 
         public async Task Stop() {
+            ContentV1 = null;
             stop = true;
             while (running || watcher == null || watcher.ThreadState == ThreadState.Unstarted) {
                 await Task.Delay(50);
@@ -231,13 +233,14 @@ namespace FallGuysStats {
                 if (index2 < 0) { index2 = line.Line.Length; }
 
                 logRound.Info.Name = line.Line.Substring(index + 62, index2 - index - 62);
+                Entities.Content.ContentGameRules rules = ContentV1.getGameRulesForRound(logRound.Info.Name);
                 logRound.Info.Round = round.Count;
                 logRound.Info.Start = line.Date;
                 logRound.Info.InParty = logRound.CurrentlyInParty;
                 logRound.Info.PrivateLobby = logRound.PrivateLobby;
-                logRound.Info.GameDuration = logRound.Duration;
+                logRound.Info.GameDuration = rules != null ? rules.duration : logRound.Duration;
                 logRound.CountingPlayers = true;
-                logRound.Info.IsFinal = logRound.IsFinal || (!logRound.HasIsFinal && LevelStats.SceneToRound.TryGetValue(logRound.Info.SceneName, out string roundName) && LevelStats.ALL.TryGetValue(roundName, out LevelStats stats) && stats.IsFinal);
+                logRound.Info.IsFinal = rules != null ? rules.isFinal : (logRound.IsFinal || (!logRound.HasIsFinal && LevelStats.SceneToRound.TryGetValue(logRound.Info.SceneName, out string roundName) && LevelStats.ALL.TryGetValue(roundName, out LevelStats stats) && stats.IsFinal));
             } else if ((index = line.Line.IndexOf("[StateMatchmaking] Begin", StringComparison.OrdinalIgnoreCase)) > 0 ||
                 (index = line.Line.IndexOf("[GameStateMachine] Replacing FGClient.StateMainMenu with FGClient.StatePrivateLobby", StringComparison.OrdinalIgnoreCase)) > 0) {
                 logRound.PrivateLobby = line.Line.IndexOf("StatePrivateLobby") > 0;
