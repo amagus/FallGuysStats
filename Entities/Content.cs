@@ -85,7 +85,7 @@ namespace FallGuysStats.Entities {
         }
         public ContentGameRules getGameRulesForRound(string roundId) {
             lock (this) {
-                return allGameRules.ContainsKey(roundId) ? allLevelRounds[roundId] : null;
+                return allGameRules.ContainsKey(roundId) ? allGameRules[roundId] : null;
             }
         }
     }
