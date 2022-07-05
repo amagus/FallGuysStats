@@ -55,7 +55,7 @@ namespace FallGuysStats.Entities {
                 lock (this) {
                     contentDict = Json.Read(fileBytes) as JsonClass;
                     if (contentDict != null) {
-                        processLevelRounds();
+                        processGameRules();
                     }
                 }
             } else {
@@ -64,7 +64,7 @@ namespace FallGuysStats.Entities {
                 }
             }
         }
-        private void processLevelRounds() {
+        private void processGameRules() {
             allLevelRounds.Clear();
             JsonArray levelRounds = contentDict["game_rules"] as JsonArray;
             if (levelRounds != null) {
